@@ -20,13 +20,13 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
  */
 public class Context {
 	
-	private static final int COOKIE_MAX_AGE = 365*24*3600;
-	private static final String COOKIE_PATH = Config.get("application", "prefix");
-	private static final String defaultMimeType = Config.get("controller", "default_mime");
+	protected static final int COOKIE_MAX_AGE = 365*24*3600;
+	protected static final String COOKIE_PATH = Config.get("application", "prefix");
+	protected static final String defaultMimeType = Config.get("controller", "default_mime");
 	
-	private HttpServletRequest request;
-	private HttpServletResponse response;
-	private HttpSession session;
+	protected HttpServletRequest request;
+	protected HttpServletResponse response;
+	protected HttpSession session;
 	
 	/**
 	 * Create a new request context
