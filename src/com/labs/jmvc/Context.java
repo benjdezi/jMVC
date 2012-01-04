@@ -48,6 +48,30 @@ public class Context {
 	}
 	
 	/**
+	 * Get the associated request
+	 * @return {@link HttpServletRequest}
+	 */
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+	
+	/**
+	 * Get the associated response
+	 * @return {@link HttpServletResponse}
+	 */
+	public HttpServletResponse getResponse() {
+		return response;
+	}
+	
+	/**
+	 * Get the associated session
+	 * @return {@link HttpSession}
+	 */
+	public HttpSession getSession() {
+		return session;
+	}
+	
+	/**
 	 * Get a request parameter
 	 * @param key {@link String} - Parameter key
 	 * @return {@link String}
