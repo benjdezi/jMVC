@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -34,9 +33,11 @@ public abstract class Controller extends HttpServlet {
 		super();
 		this.name = name;
 		this.actions = new HashMap<String, Method>(0);
+		Class<?>[] paramTypes;
 		for (Method meth:this.getClass().getMethods()) {
 			if (meth.getName().startsWith(actionPrefix)) {
-				if (!Arrays.equals(meth.getParameterTypes(), actionSignature)) {
+				paramTypes = meth.getParameterTypes();
+				if (paramTypes == null || paramTypes.length != actionSignature.length) {
 					throw new RuntimeException("Invalid action signature for " + meth.getName() + " in " + name + " controller");
 				}
 				actions.put(meth.getName().toLowerCase(), meth);
