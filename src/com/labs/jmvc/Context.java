@@ -129,7 +129,7 @@ public class Context {
 			try {
 				dispatcher.forward(request, response);
 			} catch (ServletException e) {
-				throw new Exception("Error while rendering view for " + actionName);
+				throw new Exception("Error while rendering view for " + actionName, e);
 			} catch (IOException e) {
 				throw new Exception("No view found for " + actionName);
 			}
