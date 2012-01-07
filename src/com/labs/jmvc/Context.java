@@ -258,9 +258,16 @@ public class Context {
 	 * Set the response type to JavaScript
 	 */
 	public void asJavascript() {
-		response.setContentType("application/x-javascript");
+		response.setContentType("text/javascript");
 	}
 
+	/**
+	 * Set the response type to JSONP
+	 */
+	public void asJSONP() {
+		response.setContentType("application/x-javascript");
+	}
+	
 	/**
 	 * Set the response type to HTML
 	 */
