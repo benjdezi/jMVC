@@ -258,7 +258,7 @@ public class Context {
 	 * Set the response type to JavaScript
 	 */
 	public void asJavascript() {
-		response.setContentType("text/javascript");
+		response.setContentType("application/x-javascript");
 	}
 
 	/**
