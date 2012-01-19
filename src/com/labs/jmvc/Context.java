@@ -1,7 +1,10 @@
 package com.labs.jmvc;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -299,6 +302,59 @@ public class Context {
 		FileItemFactory factory = new DefaultFileItemFactory();
 		FileUpload upload = new FileUpload(factory);
 		return upload.parseRequest(request);
+	}
+	
+	/**
+	 * Get an array parameter
+	 * @param name {@link String} - Parameter name
+	 * @return {@link String}[]
+	 */
+	@SuppressWarnings("unchecked")
+	public String[] getParameterAsArray(String name) {
+		Enumeration<String> names = request.getParameterNames();
+		Map<Integer, String> map = new HashMap<Integer, String>(0);
+		String prefix = name + "[";
+		int p, index, maxIndex = 0, l = prefix.length();
+		while (names.hasMoreElements()) {
+			String n = names.nextElement();
+			if (n.startsWith(prefix)) {
+				p = n.indexOf("]", l);
+				index = l != p ? Integer.parseInt(n.substring(l, p)) : 0;
+				if (index > maxIndex) {
+					maxIndex = index;
+				}
+				map.put(index, request.getParameter(n));
+			}
+		}
+		String[] array = new String[maxIndex + 1];
+		for (int k:map.keySet()) {
+			array[k] = map.get(k);
+		}
+		map.clear();
+		return array;
+	}
+	
+	/**
+	 * Get a map parameter
+	 * @param name {@link String} - Parameter name
+	 * @return {@link Map}<{@link String},{@link String}>
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String,String> getParameterAsMap(String name) {
+		Enumeration<String> names = request.getParameterNames();
+		Map<String, String> map = new HashMap<String, String>(0);
+		String prefix = name + "[";
+		String key;
+		int p, l = prefix.length();
+		while (names.hasMoreElements()) {
+			String n = names.nextElement();
+			if (n.startsWith(prefix)) {
+				p = n.indexOf("]", l);
+				key = n.substring(l, p);
+				map.put(key, request.getParameter(n));
+			}
+		}
+		return map;
 	}
 	
 }
