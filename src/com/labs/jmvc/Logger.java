@@ -12,23 +12,43 @@ import org.apache.log4j.PatternLayout;
  */
 public class Logger {
 
-	private static final String defaultNamespace = Config.get("logging", "namespace");
-	private static final String logFile = Config.get("logging", "log_dir") + "/" + Config.get("logging", "log_file");
-	private static final String fileDatePattern = Config.get("logging", "file_pattern");
-	private static final String recordPattern = Config.get("logging", "record_pattern");
-	private static final String level = Config.get("logging", "level");
+	private static String defaultNamespace;
+	private static String logFile;
+	private static String fileDatePattern;
+	private static String recordPattern;
+	private static String level;
 	private static org.apache.log4j.Logger logger;
+	private static boolean disabled = false;
+	
+	public static void disable() {
+		disabled = true;
+	}
+	
+	public static void enable() {
+		disabled = false;
+	}
 	
 	public static org.apache.log4j.Logger getLogger() {
 		return getLogger(defaultNamespace, logFile);
 	}
 	
 	public static org.apache.log4j.Logger getLogger(String namespace, String logFilePath) {
+		if (disabled) {
+			throw new IllegalStateException("Logging is disabled");
+		}
 		if (logger == null) {
+			
+			// Get config
+			defaultNamespace = Config.get("logging", "namespace");
+			logFile = Config.get("logging", "log_dir") + "/" + Config.get("logging", "log_file");
+			fileDatePattern = Config.get("logging", "file_pattern");
+			recordPattern = Config.get("logging", "record_pattern");
+			level = Config.get("logging", "level");
+			
 			PatternLayout layout = new PatternLayout(recordPattern);
 			logger = org.apache.log4j.Logger.getLogger(namespace);
 			logger.setLevel(Level.toLevel(level));
-			/* Setup console logging */
+			// Setup console logging
 			if (Config.getBool("logging", "stdout")) {
 				ConsoleAppender C = new ConsoleAppender();
 				C.setLayout(layout);
@@ -36,7 +56,7 @@ public class Logger {
 				C.activateOptions();
 				logger.addAppender(C);
 			}
-			/* Setup file logging */
+			// Setup file logging
 			DailyRollingFileAppender A = new DailyRollingFileAppender();
 			A.setFile(logFilePath);
 			A.setDatePattern(fileDatePattern);
@@ -48,19 +68,27 @@ public class Logger {
 	}
 	
 	public static void info(String msg) {
-		getLogger().log(Level.INFO, msg);
+		if (!disabled) {
+			getLogger().log(Level.INFO, msg);
+		}
 	}
 	
 	public static void debug(String msg) {
-		getLogger().log(Level.DEBUG, msg);
+		if (!disabled) {
+			getLogger().log(Level.DEBUG, msg);
+		}
 	}
 	
 	public static void trace(String msg) {
-		getLogger().log(Level.TRACE, msg);
+		if (!disabled) {
+			getLogger().log(Level.TRACE, msg);
+		}
 	}
 	
 	public static void warn(String msg) {
-		getLogger().log(Level.WARN, msg);
+		if (!disabled) {
+			getLogger().log(Level.WARN, msg);
+		}
 	}
 	
 	public static void error(String msg) {
@@ -68,25 +96,27 @@ public class Logger {
 	}
 
 	public static void error(String msg, Throwable e) {
-		StringBuffer buf = new StringBuffer();
-		buf.append("[" + UUID.randomUUID() + "] " + msg);
-		if (e != null) {
-			buf.append(": ");
-			buf.append(e.getMessage());
-			buf.append("\n");
-			for (StackTraceElement el:e.getStackTrace()) {
-				buf.append("\tat ");
-				buf.append(el.getClassName());
-				buf.append(".");
-				buf.append(el.getMethodName());
-				buf.append("(");
-				buf.append(el.getFileName());
-				buf.append(":");
-				buf.append(el.getLineNumber());
-				buf.append(")\n");
+		if (!disabled) {
+			StringBuffer buf = new StringBuffer();
+			buf.append("[" + UUID.randomUUID() + "] " + msg);
+			if (e != null) {
+				buf.append(": ");
+				buf.append(e.getMessage());
+				buf.append("\n");
+				for (StackTraceElement el:e.getStackTrace()) {
+					buf.append("\tat ");
+					buf.append(el.getClassName());
+					buf.append(".");
+					buf.append(el.getMethodName());
+					buf.append("(");
+					buf.append(el.getFileName());
+					buf.append(":");
+					buf.append(el.getLineNumber());
+					buf.append(")\n");
+				}
 			}
+			getLogger().log(Level.ERROR, buf.toString());
 		}
-		getLogger().log(Level.ERROR, buf.toString());
 	}
 	
 }
