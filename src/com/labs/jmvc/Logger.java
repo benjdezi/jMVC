@@ -29,7 +29,7 @@ public class Logger {
 	}
 	
 	public static org.apache.log4j.Logger getLogger() {
-		return getLogger(defaultNamespace, logFile);
+		return getLogger(null, null);
 	}
 	
 	public static org.apache.log4j.Logger getLogger(String namespace, String logFilePath) {
@@ -44,6 +44,13 @@ public class Logger {
 			fileDatePattern = Config.get("logging", "file_pattern");
 			recordPattern = Config.get("logging", "record_pattern");
 			level = Config.get("logging", "level");
+			
+			if (namespace == null) {
+				namespace = defaultNamespace;
+			}
+			if (logFilePath == null) {
+				logFilePath = logFile;
+			}
 			
 			PatternLayout layout = new PatternLayout(recordPattern);
 			logger = org.apache.log4j.Logger.getLogger(namespace);
@@ -101,7 +108,7 @@ public class Logger {
 			buf.append("[" + UUID.randomUUID() + "] " + msg);
 			if (e != null) {
 				buf.append(": ");
-				buf.append(e.getMessage());
+				buf.append(e != null ? e.getMessage() : "No error object");
 				buf.append("\n");
 				for (StackTraceElement el:e.getStackTrace()) {
 					buf.append("\tat ");
