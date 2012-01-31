@@ -133,22 +133,26 @@ public class Config {
 	 */
 	@SuppressWarnings("unchecked")
 	private static String evaluate(String value, Map<String,Object> map) {
-		int p = -1, q = -1;
+		int p = -1, q = -1, oldLength = 0;
 		StringBuffer eval = new StringBuffer(value);
 		while ((p=eval.indexOf("${", p+1)) >= 0) {
 			q = eval.indexOf("}", p);
 			String var = eval.substring(p+2, q);
-			Object varValue;
+			String varValue;
 			if (var.indexOf(".") > 0) {
 				/* External reference TODO: Add support for multi level reference (e.g. app.foo.bar.val)*/
 				String[] parts = var.split("\\.");
-				varValue = ((Map)instance.values.get(parts[0])).get(parts[1]);
+				varValue = ((Map)instance.values.get(parts[0])).get(parts[1]).toString();
 			} else {
 				/* Same level reference */
-				varValue = (map != null ? map : instance.values).get(var);
+				varValue = (map != null ? map : instance.values).get(var).toString();
 			}
+			if (varValue.indexOf("${") >= 0) {
+				varValue = evaluate(varValue, map);
+			}
+			oldLength = eval.length();
 			eval.replace(p, q+1, varValue.toString());
-			p = q + 1;
+			p = q - (oldLength - eval.length());
 		}
 		return eval.toString();
 	}
