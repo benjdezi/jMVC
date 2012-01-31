@@ -138,17 +138,21 @@ public class Config {
 		while ((p=eval.indexOf("${", p+1)) >= 0) {
 			q = eval.indexOf("}", p);
 			String var = eval.substring(p+2, q);
-			String varValue;
+			Object varValue;
 			if (var.indexOf(".") > 0) {
 				/* External reference TODO: Add support for multi level reference (e.g. app.foo.bar.val)*/
 				String[] parts = var.split("\\.");
-				varValue = ((Map)instance.values.get(parts[0])).get(parts[1]).toString();
+				if ((varValue = ((Map)instance.values.get(parts[0])).get(parts[1])) != null) {
+					varValue = varValue.toString();
+				}
 			} else {
 				/* Same level reference */
-				varValue = (map != null ? map : instance.values).get(var).toString();
+				if ((varValue = (map != null ? map : instance.values).get(var)) != null) {
+					varValue = varValue.toString();
+				}
 			}
-			if (varValue.indexOf("${") >= 0) {
-				varValue = evaluate(varValue, map);
+			if (((String)varValue).indexOf("${") >= 0) {
+				varValue = evaluate((String)varValue, map);
 			}
 			oldLength = eval.length();
 			eval.replace(p, q+1, varValue.toString());
