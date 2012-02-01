@@ -307,14 +307,14 @@ public class Context {
 	/**
 	 * Get an array parameter
 	 * @param name {@link String} - Parameter name
-	 * @return {@link String}[]
+	 * @return {@link String}[] Null if not found
 	 */
 	@SuppressWarnings("unchecked")
 	public String[] getParameterAsArray(String name) {
 		Enumeration<String> names = request.getParameterNames();
 		Map<Integer, String> map = new HashMap<Integer, String>(0);
 		String prefix = name + "[";
-		int p, index, maxIndex = 0, l = prefix.length();
+		int p, index, maxIndex = -1, l = prefix.length();
 		while (names.hasMoreElements()) {
 			String n = names.nextElement();
 			if (n.startsWith(prefix)) {
@@ -326,18 +326,21 @@ public class Context {
 				map.put(index, request.getParameter(n));
 			}
 		}
-		String[] array = new String[maxIndex + 1];
-		for (int k:map.keySet()) {
-			array[k] = map.get(k);
+		if (maxIndex >= 0) {
+			String[] array = new String[maxIndex + 1];
+			for (int k:map.keySet()) {
+				array[k] = map.get(k);
+			}
+			map.clear();
+			return array;
 		}
-		map.clear();
-		return array;
+		return null;
 	}
 	
 	/**
 	 * Get a map parameter
 	 * @param name {@link String} - Parameter name
-	 * @return {@link Map}<{@link String},{@link String}>
+	 * @return {@link Map}<{@link String},{@link String}> Null if not found
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String,String> getParameterAsMap(String name) {
@@ -354,7 +357,7 @@ public class Context {
 				map.put(key, request.getParameter(n));
 			}
 		}
-		return map;
+		return map.size() > 0 ? map : null;
 	}
 	
 }
