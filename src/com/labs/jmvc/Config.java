@@ -140,13 +140,13 @@ public class Config {
 			String var = eval.substring(p+2, q);
 			Object varValue;
 			if (var.indexOf(".") > 0) {
-				/* External reference TODO: Add support for multi level reference (e.g. app.foo.bar.val)*/
+				// External reference TODO: Add support for multi level reference (e.g. app.foo.bar.val)
 				String[] parts = var.split("\\.");
 				if ((varValue = ((Map)instance.values.get(parts[0])).get(parts[1])) != null) {
 					varValue = varValue.toString();
 				}
 			} else {
-				/* Same level reference */
+				// Same level reference
 				if ((varValue = (map != null ? map : instance.values).get(var)) != null) {
 					varValue = varValue.toString();
 				}
@@ -210,7 +210,7 @@ public class Config {
 		Object val = getObject(section, key);
 		if (val != null) {
 			if (!(val instanceof String)) {
-				val = val.toString();
+				val = val.toString().trim();
 				instance.put(section, key, val);
 			}
 			return (String)val;
@@ -228,7 +228,7 @@ public class Config {
 		Object val = getObject(section, key);
 		if (val != null) {
 			if (!(val instanceof Integer)) {
-				val = Integer.parseInt(val.toString());
+				val = Integer.parseInt(val.toString().trim());
 				instance.put(section, key, val);
 			}
 			return (Integer)val;
@@ -246,7 +246,7 @@ public class Config {
 		Object val = getObject(section, key);
 		if (val != null) {
 			if (!(val instanceof Long)) {
-				val = Long.parseLong(val.toString());
+				val = Long.parseLong(val.toString().trim());
 				instance.put(section, key, val);
 			}
 			return (Long)val;
@@ -264,7 +264,7 @@ public class Config {
 		Object val = getObject(section, key);
 		if (val != null) {
 			if (!(val instanceof Boolean)) {
-				val = Boolean.parseBoolean(val.toString());
+				val = Boolean.parseBoolean(val.toString().trim());
 				instance.put(section, key, val);
 			}
 			return (Boolean)val;
@@ -282,8 +282,12 @@ public class Config {
 		Object val = getObject(section, key);
 		if (val != null) {
 			if (!val.getClass().isArray()) {
-				val = ((String)val).split(",|,\\s|\\s,");
-				instance.put(section, key, val);
+				String[] a = ((String)val).split(",|,\\s|\\s,");
+				for (int i=0;i<a.length;i++) {
+					a[i] = a[i].trim();
+				}
+				instance.put(section, key, a);
+				val = a;
 			}
 			return (String[])val;
 		}
