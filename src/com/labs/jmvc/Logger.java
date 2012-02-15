@@ -99,7 +99,7 @@ public class Logger {
 	}
 	
 	public static void error(Throwable e) {
-		error(e.getMessage());
+		error(e != null ? e.getMessage() : "null", e);
 	}
 	
 	public static void error(String msg) {
