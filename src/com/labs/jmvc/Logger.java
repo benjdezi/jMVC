@@ -98,6 +98,10 @@ public class Logger {
 		}
 	}
 	
+	public static void error(Throwable e) {
+		error(e.getMessage());
+	}
+	
 	public static void error(String msg) {
 		error(msg, null);
 	}
