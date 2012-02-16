@@ -99,7 +99,7 @@ public class Logger {
 	}
 	
 	public static void error(Throwable e) {
-		error(e != null ? e.getMessage() : "null", e);
+		error(null, e);
 	}
 	
 	public static void error(String msg) {
@@ -109,7 +109,7 @@ public class Logger {
 	public static void error(String msg, Throwable e) {
 		if (!disabled) {
 			StringBuffer buf = new StringBuffer();
-			buf.append("[" + UUID.randomUUID() + "] " + msg);
+			buf.append("[" + UUID.randomUUID() + "] " + (msg != null ? msg : (e != null ? e.getMessage() : "")));
 			if (e != null) {
 				buf.append(": ");
 				buf.append(e != null ? e.getMessage() : "No error object");
